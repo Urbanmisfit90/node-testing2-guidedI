@@ -1,4 +1,4 @@
-const db = require('../../data/dbConfig.js')
+const db = require("../../data/dbConfig.js");
 
 module.exports = {
   insert,
@@ -6,24 +6,35 @@ module.exports = {
   remove,
   getAll,
   getById,
-}
+};
 
 function getAll() {
-  return db('hobbits')
+  return db("hobbits");
 }
 
 function getById(id) {
-  return null
+  return db("hobbits")
+  .where("id", id)
+  .first();
 }
 
 async function insert(hobbit) {
-  return null
+  return await db('hobbits').insert(hobbit).then(([id]) => {
+    return db('hobbits').where('id', id).first()
+  })
 }
 
 async function update(id, changes) {
-  return null
+  // Update only the specified changes in the database
+  await db('hobbits')
+    .where({ id })
+    .update(changes);
+  return await getById(id); // Get the updated hobbit for response
 }
 
-function remove(id) {
-  return null
+async function remove(id) {
+  const deletedCount = await db('hobbits')
+    .where({ id })
+    .del(); // Use .del() for delete operation
+  return deletedCount;
 }
